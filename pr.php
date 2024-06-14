@@ -109,7 +109,7 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
 
               <div class="form-group col-xs-6">
                 <label for="exampleInputEmail1">Tanggal PR</label>
-                <input type="date" name="tgl_pc" class="form-control" autocomplete="off" required >
+                <input type="text" name="tgl_pc" class="form-control" value="<?= date('Y-m-d');?>" autocomplete="off" required readonly >
               </div>
 
               <div class="form-group col-xs-6">
@@ -126,30 +126,32 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
                   </select>
                 </div>
 
-                <div class="form-group col-xs-6">
-              <label for="exampleInputEmail1">No.Rekening</label>
-                 <div class="box-body">
-              <div class="row">
-                <div class="col-xs-4">
-                  <!-- <input type="number" name ="rek" class="form-control" placeholder="No.rek"> -->
-                  <select class="form-control select2" id="rek" style="width: 100%;"  name="rek" onChange="ket()" required="required"><?php include "conn.php"; 
-                       if (!$koneksi){ die("Koneksi database gagal:".mysqli_connect_error()); } $sql="select * from tbrekening"; $hasil=mysqli_query($koneksi,$sql); $no=0; while ($row = mysqli_fetch_array($hasil)) { $no++; ?> <option value="<?php echo $row['norek'];?>"><?php echo $row['norek'] ; str_repeat('&nbsp;', 2); echo" -- "; echo $row['nama_bank'] ;echo" - "; echo $row['atas_nama'] ; ?></option><?php } ?> </select>
-                </div>
-                <div class="col-xs-4">
-                  <input type="text" id="textnamabank"  onkeyup="this.value = this.value.toUpperCase()"  class="form-control" placeholder="Nama Bank" name="nb">
-                  <!-- <input type="text" name="nb" id="nb"> -->
-                </div>
-                <div class="col-xs-4">
-                  <input type="text" id="textatasnama" onkeyup="this.value = this.value.toUpperCase()" class="form-control" placeholder="atas nama" name="na">
-                  <!-- <input type="text" name="na" id="na"> -->
-                </div>
-              </div>
-            </div>   
+              <div class="form-group col-xs-6">
+                <label for="exampleInputEmail1">No.Rekening</label>
+                  <div class="box-body">
+                    <div class="row">
+                      
+                      <div class="col-xs-4">
+                      <!-- <input type="number" name ="rek" class="form-control" placeholder="No.rek"> -->
+                          <select class="form-control select2" id="rek" style="width: 100%;"  name="rek" onChange="ket()" required="required"><?php include "conn.php"; 
+                          if (!$koneksi){ die("Koneksi database gagal:".mysqli_connect_error()); } $sql="select * from tbrekening"; $hasil=mysqli_query($koneksi,$sql); $no=0; while ($row = mysqli_fetch_array($hasil)) { $no++; ?> <option value="<?php echo $row['norek'];?>"><?php echo $row['norek'] ; str_repeat('&nbsp;', 2); echo" -- "; echo $row['nama_bank'] ;echo" - "; echo $row['atas_nama'] ; ?></option><?php } ?> </select>
+                      </div>
+                      <div class="col-xs-4">
+                        <input type="text" id="textnamabank"  onkeyup="this.value = this.value.toUpperCase()"  class="form-control" placeholder="Nama Bank" name="nb">
+                        <!-- <input type="text" name="nb" id="nb"> -->
+                      </div>
+                
+                      <div class="col-xs-4">
+                        <input type="text" id="textatasnama" onkeyup="this.value = this.value.toUpperCase()" class="form-control" placeholder="atas nama" name="na">
+                        <!-- <input type="text" name="na" id="na"> -->
+                      </div>
+                    </div>
+                  </div>   
               </div>
 
               <div class="form-group col-xs-6">
               <label for="exampleInputEmail1">Keterangan</label>
-                 <textarea name="keterangan" class="form-control"  onkeyup ="this.value = this.value.toUpperCase()" autocomplete="off" required placeholder="Keterangan"></textarea>
+                 <textarea name="keterangan" class="form-control"  autocomplete="on" required placeholder="Keterangan"></textarea>
               </div>
 
               
@@ -227,10 +229,11 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
         console.log();
         var newRow = $('<tr>');
         var cols = "";
-        cols += '<td><select class="form-control select2" id="tkode'+i+'" name="tkode[]" style="width: 100%;" onChange="getSatuan('+i+')" required="required"><option value="">Pilih Item</option><?php include "conn.php"; 
+        cols += '<td><select class="form-control select2" id="tkode'+i+'" name="tkode[]" style="width: 100%;" onChange="getSatuan('+i+')" ><option value="">Pilih Item</option><?php include "conn.php"; 
                        if (!$koneksi){ die("Koneksi database gagal:".mysqli_connect_error()); } $sql="select * from mbarang where stok > 0"; $hasil=mysqli_query($koneksi,$sql); $no=0; while ($row = mysqli_fetch_array($hasil)) { $no++; ?> <option value="<?php echo $row['kode_barang'];?>"><?php echo $row['kode_barang'] ; str_repeat('&nbsp;', 2); echo" -- "; echo $row['nama_barang'] ; ?></option><?php } ?> </select></td>';
 
-        cols += '<td><input type="text" name="turaian[]" class="form-control" value=""/></td>';
+        //cols += '<td><input type="text" name="turaian[]" class="form-control" value=""/></td>';
+        cols += '<td><input type="text" name="turaian[]" id="turaian'+i+'" class="form-control" value=""/></td>';
         // cols += '<td><p id="texturaian'+i+'"></p><textarea name="turaian[]" id="turaian'+i+'" class="form-control"></textarea></td>';
         
         cols += '<td><input type="text" name="tjumlah[]" id="tjumlah'+i+'" class="form-control" onKeyUp="return fjumlah('+i+')" value=""/></td>';
@@ -338,11 +341,15 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
               if(text){
                 $('#tsatuan'+id).prop('readonly', true);
                 $('#tsatuan'+id).val(text.satuan);
+                $('#turaian'+id).prop('readonly', true);
+                $('#turaian'+id).val(text.nama_barang);
 
 
               }else{
                 $('#tsatuan'+id).val("");
                 $('#tsatuan'+id).prop('readonly', false);
+                $('#turaian'+id).val("");
+                $('#turaian'+id).prop('readonly', false);
                 
                 // alert('test'); 
               }
@@ -391,5 +398,8 @@ $(document).ready(function(){
           $("#aaa").val(sumA);
         }
 
-
+        function myKeyup() {
+          let x = document.getElementById("fketerangan");
+          x.value = x.value.toUpperCase();
+        }
 </script>

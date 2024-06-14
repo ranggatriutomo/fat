@@ -201,6 +201,8 @@ body {
           
       </tbody>
     </table>
+      <br>
+      <b>* PENGAJUAN DANA PETTY CASH MAKSIMAL Rp. 10.000.000</b>
 
     <br><br><br><br><br><br>
     <table>
@@ -216,7 +218,7 @@ body {
               <td height="100"></td>
             </tr>
             <tr>
-              <td width="200">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(........................................)</td>
+              <td width="200">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;&nbsp;<?= $nama_pemohon;?>&nbsp;&nbsp;)</td>
               <td width="200">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(........................................)</td>
               <td width="200">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(........................................)</td>
             </tr>
@@ -227,7 +229,7 @@ body {
   </body>
 
   <footer>
-    
+  
   </footer>
 </html>
  

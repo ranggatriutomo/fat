@@ -48,7 +48,7 @@
                     <tbody >
                     <?php
                     include 'conn.php';
-                      $a = mysqli_query($koneksi, "select *, SUM(total_pc) AS grand_total from pc_fat where divisi = '$divisi' group by no_pc");
+                      $a = mysqli_query($koneksi, "select *, SUM(total_pc) AS grand_total from pc_fat where divisi = '$divisi' group by no_pc order by tgl_pc desc");
                         $no=1;
                         foreach ($a as $row){
                           $hasil_rupiah = "Rp " . number_format($row['grand_total'],0,',','.');
@@ -67,16 +67,22 @@
                                   if ($mid == "PC"){
                                       echo "<a href='cetak_pc.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."' target='_newtab'>
                                       <i class='fa fa-print'></i></a> &nbsp;&nbsp;&nbsp;
+                                      <a href='edit_pc.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
+                                      <i class='fa fa-pencil'></i></a>&nbsp;&nbsp;&nbsp;
                                       <a href='view_pc.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
                                       <i class='fa fa-eye'></i></a>";
                                   } elseif ($mid == "MR") {
                                       echo "<a href='cetak_mr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."' target='_newtab'>
                                             <i class='fa fa-print'></i></a>  &nbsp;&nbsp;&nbsp;
+                                            <a href='edit_mr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
+                                            <i class='fa fa-pencil'></i></a>  &nbsp;&nbsp;&nbsp;
                                             <a href='view_mr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
                                             <i class='fa fa-eye'></i></a>";
                                   }else{
                                     echo "<a href='cetak_pr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."' target='_newtab'>
                                        <i class='fa fa-print'></i></a>  &nbsp;&nbsp;&nbsp;
+                                       <a href='edit_pr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
+                                            <i class='fa fa-pencil'></i></a>  &nbsp;&nbsp;&nbsp;
                                        <a href='view_pr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
                                             <i class='fa fa-eye'></i></a>
                                        ";

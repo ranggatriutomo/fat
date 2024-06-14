@@ -52,7 +52,7 @@ if($cek > 0){
         });     
     },10);  
     window.setTimeout(function(){ 
-        window.location.replace('admin/index.php');
+        window.location.replace('https://fat.dabnsalvage.co.id/admin/dashboard.php');
     } ,3000);   
   </script>";
         // header("location:home.php");

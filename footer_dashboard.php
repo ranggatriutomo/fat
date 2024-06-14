@@ -3,6 +3,7 @@
       <b>Version</b> 1.0
     </div>
     <strong>Copyright &copy; 2024 <a href="#">IT Division</a>.</strong> 
+      <marquee width="60%" direction="left"> MAKSIMAL UNTUK PENGAJUAN DANA PETTY CASH Rp. 10.000.000</marquee>
   </footer>
 
 <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>

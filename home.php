@@ -108,22 +108,31 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
 
               <div class="form-group col-xs-6">
                 <label for="exampleInputEmail1">Tanggal PC</label>
-                <input type="date" name="tgl_pc" class="form-control" autocomplete="off" required >
+                <input type="text" name="tgl_pc" class="form-control" value="<?= date('Y-m-d');?>" autocomplete="off" required readonly>
               </div>
 
               <div class="form-group col-xs-6">
-              <label for="exampleInputEmail1">Nomor Rekening</label>
-              <div class="row">
-                <div class="col-xs-4">
-                  <input type="number" name ="rek" class="form-control" placeholder="No.rek">
-                </div>
-                <div class="col-xs-4">
-                  <input type="text" name ="nb" onkeyup="this.value = this.value.toUpperCase()" class="form-control" placeholder="Nama Bank">
-                </div>
-                <div class="col-xs-4">
-                  <input type="text" name ="na" onkeyup="this.value = this.value.toUpperCase()" class="form-control" placeholder="atas nama">
-                </div>
-              </div>
+                <label for="exampleInputEmail1">No.Rekening</label>
+                  <div class="box-body">
+                    <div class="row">
+                      
+                      <div class="col-xs-4">
+                      <!-- <input type="number" name ="rek" class="form-control" placeholder="No.rek"> -->
+                          <select class="form-control select2" id="rek" style="width: 100%;"  name="rek" onChange="ket()" required="required"><?php include "conn.php"; 
+                          if (!$koneksi){ die("Koneksi database gagal:".mysqli_connect_error()); } $sql="select * from tbrekening"; $hasil=mysqli_query($koneksi,$sql); $no=0; while ($row = mysqli_fetch_array($hasil)) { $no++; ?> <option value="<?php echo $row['norek'];?>"><?php echo $row['norek'] ; str_repeat('&nbsp;', 2); echo" -- "; echo $row['nama_bank'] ;echo" - "; echo $row['atas_nama'] ; ?></option><?php } ?> </select>
+                      </div>
+                      <div class="col-xs-4">
+                        <input type="text" id="textnamabank"  onkeyup="this.value = this.value.toUpperCase()"  class="form-control" placeholder="Nama Bank" name="nb">
+                        <!-- <input type="text" name="nb" id="nb"> -->
+                      </div>
+                
+                      <div class="col-xs-4">
+                        <input type="text" id="textatasnama" onkeyup="this.value = this.value.toUpperCase()" class="form-control" placeholder="atas nama" name="na">
+                        <!-- <input type="text" name="na" id="na"> -->
+                      </div>
+
+                    </div>
+                  </div>   
               </div>
 
               <div class="form-group col-xs-6">
@@ -193,6 +202,12 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
 <script>
    
     $(document).ready(function () {
+      ket($('#rek').val());
+
+      $('.select2').select2({
+          tags: true,
+        });
+
       var i = 1;
       
     $('#add-items').click(function(e) {
@@ -218,7 +233,10 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
         $("#ttotal").val("");
         $("#hasilJumlah").val("");
 
-        
+        $('.select2').select2({
+          tags: true,
+        });
+
 
         i++;
     });
@@ -237,7 +255,6 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
         $("#aaa").val(sumA);
     }
    
-
 
     $('#myTable').on('click', '.delrow', function(e) {
         var lenRow = $('#myTable tbody tr').length;
@@ -263,6 +280,37 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
         });
 
       });
+
+      function ket(id) {
+      var kd = $('#rek'). val();
+
+        $.ajax({ type: "GET",   
+             url: "ket_data.php?rek="+kd,   
+             async: false,
+             success : function(text)
+             {
+              if(text){
+                $('#textnamabank').prop('readonly', true);
+                $('#textatasnama').prop('readonly', true);
+                $('#textnamabank').val(text.nama_bank);
+                $('#textatasnama').val(text.atas_nama);
+
+              }else{
+                $('#textnamabank').val("");
+                $('#textatasnama').val("");
+
+                $('#textnamabank').prop('readonly', false);
+                $('#textatasnama').prop('readonly', false);
+              }
+               
+                // alert('test')
+             }
+        });
+          // var vtjumlah = document.getElementById("tjumlah"+id).value;
+          // var vtharga = document.getElementById("tharga"+id).value;
+          // var hasil = vtjumlah * vtharga;
+          // document.getElementById("hasilJumlah"+id).value=hasil;
+        }
 
 $(document).ready(function(){
     // Tangani peristiwa input pada kedua field
