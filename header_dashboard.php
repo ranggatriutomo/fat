@@ -68,7 +68,7 @@
               <ul class="dropdown-menu" role="menu">
                 <li><a href="home.php">Form Petty Cash</a></li>
                 <li><a href="mr.php">Form Material Request</a></li>
-                <li><a href="pr.php">Form Purchase Request</a></li>
+                <li><a href="purchase_request.php">Form Purchase Request</a></li>
                 <!-- <li><a href="#">Purchase Request</a></li> -->
               </ul>
             </li>

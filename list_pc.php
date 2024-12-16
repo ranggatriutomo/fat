@@ -41,61 +41,75 @@
                       <th>#</th>
                       <th>Tanggal Pengajuan</th>
                       <th>Nomor Pengajuan</th>
-                      <th>Total Pengajuan</th>
+                      <th>Status Pengajuan</th>
                       <th>Action</th>
                       </tr>
                     </thead>
                     <tbody >
-                    <?php
-                    include 'conn.php';
-                      $a = mysqli_query($koneksi, "select *, SUM(total_pc) AS grand_total from pc_fat where divisi = '$divisi' group by no_pc order by tgl_pc desc");
-                        $no=1;
-                        foreach ($a as $row){
-                          $hasil_rupiah = "Rp " . number_format($row['grand_total'],0,',','.');
-                        ?>
-                          <tr>
-                            <td><?=$no?></td>
-                            <td><?= date('d F Y', strtotime($row['tgl_pc'])) ?></td>
-                            <td><?=$row['no_pc']?></td>
-                            <td><?=$hasil_rupiah?></td>
-                            <td> 
-                              <?php
-                              $kode = $row['no_pc'];
-                              $mid = substr($kode, 9, 2);
-                              ?>
-                              <?php   
-                                  if ($mid == "PC"){
-                                      echo "<a href='cetak_pc.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."' target='_newtab'>
-                                      <i class='fa fa-print'></i></a> &nbsp;&nbsp;&nbsp;
-                                      <a href='edit_pc.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
-                                      <i class='fa fa-pencil'></i></a>&nbsp;&nbsp;&nbsp;
-                                      <a href='view_pc.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
-                                      <i class='fa fa-eye'></i></a>";
-                                  } elseif ($mid == "MR") {
-                                      echo "<a href='cetak_mr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."' target='_newtab'>
-                                            <i class='fa fa-print'></i></a>  &nbsp;&nbsp;&nbsp;
-                                            <a href='edit_mr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
-                                            <i class='fa fa-pencil'></i></a>  &nbsp;&nbsp;&nbsp;
-                                            <a href='view_mr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
-                                            <i class='fa fa-eye'></i></a>";
-                                  }else{
-                                    echo "<a href='cetak_pr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."' target='_newtab'>
-                                       <i class='fa fa-print'></i></a>  &nbsp;&nbsp;&nbsp;
-                                       <a href='edit_pr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
-                                            <i class='fa fa-pencil'></i></a>  &nbsp;&nbsp;&nbsp;
-                                       <a href='view_pr.php?no_pc=".$row['no_pc']."&tgl_trxout=".$row['tgl_pc']."'>
-                                            <i class='fa fa-eye'></i></a>
-                                       ";
-                                }
-                                  ?>
-                            
-                            </td>
-                            </tr>
-                        <?php
-                            $no++;
-                      }
-                     
-                ?>
+                  <?php
+include 'conn.php';
+
+// Query untuk mendapatkan jumlah status 1 dan 0 per grup
+$query = "
+    SELECT 
+        *,
+        no_pc, 
+        SUM(total_pc) AS grand_total, 
+        MAX(status_item) AS max_status,
+        MIN(status_item) AS min_status
+    FROM 
+        pc_fat 
+    WHERE 
+        divisi = '$divisi' 
+    GROUP BY 
+        no_pc 
+    ORDER BY 
+        tgl_pc DESC
+";
+$result = mysqli_query($koneksi, $query);
+$no = 1;
+
+while ($row = mysqli_fetch_assoc($result)) {
+    $hasil_rupiah = "Rp " . number_format($row['grand_total'], 0, ',', '.');
+    $status_pengajuan = ($row['max_status'] == 1 && $row['min_status'] == 0) ? "SEBAGIAN REALISASI" : (($row['max_status'] == 1) ? "SUDAH REALISASI" : "BELUM REALISASI");
+    // Menentukan warna font berdasarkan status
+        if ($status_pengajuan == "SEBAGIAN REALISASI") {
+            $status_color = "color: blue;";
+        } elseif ($status_pengajuan == "SUDAH REALISASI") {
+            $status_color = "color: green;";
+        } else {
+            $status_color = "color: red;";
+        }
+    $kode = $row['no_pc'];
+    $mid = substr($kode, 9, 2);
+?>
+    <tr>
+        <td><?= $no ?></td>
+        <td><?= date('d F Y', strtotime($row['tgl_pc'])) ?></td>
+        <td><?= $row['no_pc'] ?></td>
+        <td style="<?= $status_color ?>"><?= $status_pengajuan ?></td>
+        <td>
+            <?php
+            if ($mid == "PC") {
+                echo "<a href='cetak_pc.php?no_pc=" . $row['no_pc'] . "&tgl_trxout=" . $row['tgl_pc'] . "' target='_newtab'><i class='fa fa-print'></i></a> &nbsp;&nbsp;&nbsp;";
+                echo "<a href='edit_pc.php?no_pc=" . $row['no_pc'] . "&tgl_trxout=" . $row['tgl_pc'] . "'><i class='fa fa-pencil'></i></a> &nbsp;&nbsp;&nbsp;";
+                echo "<a href='view_pc.php?no_pc=" . $row['no_pc'] . "&tgl_trxout=" . $row['tgl_pc'] . "'><i class='fa fa-eye'></i></a>";
+            } elseif ($mid == "MR") {
+                echo "<a href='cetak_mr.php?no_pc=" . $row['no_pc'] . "&tgl_trxout=" . $row['tgl_pc'] . "' target='_newtab'><i class='fa fa-print'></i></a> &nbsp;&nbsp;&nbsp;";
+                echo "<a href='edit_mr.php?no_pc=" . $row['no_pc'] . "&tgl_trxout=" . $row['tgl_pc'] . "'><i class='fa fa-pencil'></i></a> &nbsp;&nbsp;&nbsp;";
+                echo "<a href='view_mr.php?no_pc=" . $row['no_pc'] . "&tgl_trxout=" . $row['tgl_pc'] . "'><i class='fa fa-eye'></i></a>";
+            } else {
+                echo "<a href='cetak_pr.php?no_pc=" . $row['no_pc'] . "&tgl_trxout=" . $row['tgl_pc'] . "' target='_newtab'><i class='fa fa-print'></i></a> &nbsp;&nbsp;&nbsp;";
+                echo "<a href='edit_pr.php?no_pc=" . $row['no_pc'] . "&tgl_trxout=" . $row['tgl_pc'] . "'><i class='fa fa-pencil'></i></a> &nbsp;&nbsp;&nbsp;";
+                echo "<a href='view_pr.php?no_pc=" . $row['no_pc'] . "&tgl_trxout=" . $row['tgl_pc'] . "'><i class='fa fa-eye'></i></a>";
+            }
+            ?>
+        </td>
+    </tr>
+<?php
+    $no++;
+}
+?>
                     </tbody>
                   </table>
                 </div>

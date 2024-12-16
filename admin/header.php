@@ -73,6 +73,8 @@
       <ul class="sidebar-menu" data-widget="tree">
       <li><a href="dashboard.php"><i class="glyphicon glyphicon-dashboard"></i> <span>Dashboard</span></a></li>
       <li><a href="index.php"><i class="glyphicon glyphicon-book"></i> <span>Approval</span></a></li>
+      <li><a href="pr.php"><i class="glyphicon glyphicon-book"></i> <span>Purchase Request</span></a></li>
+      <li><a href="list_pr.php"><i class="glyphicon glyphicon-book"></i> <span>List Purchase Request</span></a></li>
         <li><a href="rek.php"><i class="glyphicon glyphicon-file"></i> <span>Data Rekening</span></a></li>
         <li><a href="logout.php"><i class="glyphicon glyphicon-lock"></i> <span>Logout</span></a></li>
       </ul>

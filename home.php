@@ -50,7 +50,6 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
 
 ?>
 <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <!-- <h1>

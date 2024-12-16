@@ -1,3 +1,4 @@
+<!-- pembuata  nomor auto generate reset per bulan -->
 <?php include_once('header_dashboard.php');
 include 'conn.php';
 
@@ -8,20 +9,22 @@ $last_id = $row['no_pc'];
 $bulan =   date('m');
 if ($last_id == "")
 {
-    $format = "001-DABN-MR-".$bulan;
+    $format = "001-DABN-PC-".$bulan;
 }
-elseif(strlen($last_id) == 14){ //panjang kode 9 001-DABN-MR
+elseif(strlen($last_id) == 14){ //panjang kode 9 001-DABN-PC
     $urut =  substr($last_id, 0,3);
     $nourut = (int) $urut;  
     $nourut++;
     if($nourut < 10){
-      $format = "00".$nourut."-DABN-MR-".$bulan;
+      $format = "00".$nourut."-DABN-PR-".$bulan;
     }elseif($nourut < 100){
-      $format = "0".$nourut."-DABN-MR-".$bulan;
+      $format = "0".$nourut."-DABN-PR-".$bulan;
     }else{
-      $format = $nourut."-DABN-MR-".$bulan;
+      $format = $nourut."-DABN-PR-".$bulan;
     } 
 }
+
+// script buat nomor internal 
 
 $query = "select max(no_intern) as no_intern from pc_fat WHERE month(tgl_pc) = MONTH(CURRENT_DATE()) && divisi = '$divisi' order by id_pc_fat  desc limit 1;";
 $result = mysqli_query($koneksi,$query);
@@ -45,7 +48,6 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
     } 
 }
 
-
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -65,7 +67,7 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
       <div class="row">
         <div class="col-xs-12">
           <h2 class="page-header">
-            <i class="fa fa-globe"></i> Form Material Request to Purchase
+            <i class="fa fa-globe"></i> Form Purchase Request
             <small class="pull-right"><?= date('l, d-m-Y');?></small>
           </h2>
         </div>
@@ -73,7 +75,7 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
       </div>
       <!-- info row -->
       <div class="row invoice-info">
-      <form role="form" method="post" onSubmit="if(!confirm('Apakah anda yakin menyimpan data ini?')){return false;}"  action="simpan_pengajuan_mr.php" enctype="multipart/form-data">
+      <form role="form" method="post" onSubmit="if(!confirm('Apakah anda yakin menyimpan data ini?')){return false;}"  action="simpan_pengajuan_pr.php" enctype="multipart/form-data">
      <div class="row">
         <div class="col-md-12">
           <!-- general form elements -->
@@ -82,10 +84,18 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
             <!-- form start -->
             <div class="box-body">
 
-              <div class="form-group col-xs-6">
+              <!-- <div class="form-group col-xs-6">
               <label for="exampleInputEmail1">No.Purchase Request</label>
                     <input type="text" name="no_pc" class="form-control"  value ="<?=$format?>" readonly>
+              </div> -->
+
+              <div class="form-group col-xs-6">
+                <label for="exampleInputEmail1">No.Purchase</label>
+                    <!-- <input type="number" name ="rek" class="form-control" placeholder="No.rek"> -->
+                        <select class="form-control select2" id="rek" style="width: 100%;"  name="no_pc" onChange="no_mr()" required="required"><?php include "conn.php"; 
+                        if (!$koneksi){ die("Koneksi database gagal:".mysqli_connect_error()); } $sql="select * from pc_fat where no_pc like '%MR%'"; $hasil=mysqli_query($koneksi,$sql); $no=0; while ($row = mysqli_fetch_array($hasil)) { $no++; ?> <option value="<?php echo $row['no_pc'];?>"><?php echo $row['no_pc'] ; str_repeat('&nbsp;', 2); echo" -- "; echo $row['nama_pemohon'] ;echo" - "; echo $row['status_req'] ; ?></option><?php } ?> </select>  
               </div>
+              
               <div class="form-group col-xs-6">
               <label for="exampleInputEmail1">No.Internal</label>
                     <input type="text" name="no_intern" class="form-control" value ="<?=$format_1?>" readonly>
@@ -106,7 +116,7 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
               </div>
 
               <div class="form-group col-xs-6">
-                <label for="exampleInputEmail1">Tanggal MR</label>
+                <label for="exampleInputEmail1">Tanggal PR</label>
                 <input type="text" name="tgl_pc" class="form-control" value="<?= date('Y-m-d');?>" autocomplete="off" required readonly >
               </div>
 
@@ -123,34 +133,39 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
                     <option>Urgent</option>
                   </select>
                 </div>
-                <div class="form-group col-xs-6">
-              <label for="exampleInputEmail1">Keterangan</label>
-                 <textarea name="keterangan" class="form-control"  autocomplete="on" required placeholder="Keterangan"></textarea>
-              </div> 
-
-                  <div class="form-group col-xs-6">
-                      <label for="exampleInputEmail1">File Pendukung</label>
-                      <input type="file" name="berkas[]" class="form-control" multiple>
-                      <p style="color: red">Ekstensi yang diperbolehkan .jpg .png .jpeg</p>
-                   </div>
 
               <div class="form-group col-xs-6">
-                <label>No.Rekening</label>
-                  <div class="row">
+                <label for="exampleInputEmail1">No.Rekening</label>
+                  <div class="box-body">
+                    <div class="row">
+                      
                       <div class="col-xs-4">
+                      <!-- <input type="number" name ="rek" class="form-control" placeholder="No.rek"> -->
                           <select class="form-control select2" id="rek" style="width: 100%;"  name="rek" onChange="ket()" required="required"><?php include "conn.php"; 
                           if (!$koneksi){ die("Koneksi database gagal:".mysqli_connect_error()); } $sql="select * from tbrekening"; $hasil=mysqli_query($koneksi,$sql); $no=0; while ($row = mysqli_fetch_array($hasil)) { $no++; ?> <option value="<?php echo $row['norek'];?>"><?php echo $row['norek'] ; str_repeat('&nbsp;', 2); echo" -- "; echo $row['nama_bank'] ;echo" - "; echo $row['atas_nama'] ; ?></option><?php } ?> </select>
                       </div>
                       <div class="col-xs-4">
                         <input type="text" id="textnamabank"  onkeyup="this.value = this.value.toUpperCase()"  class="form-control" placeholder="Nama Bank" name="nb">
+                        <!-- <input type="text" name="nb" id="nb"> -->
                       </div>
                 
                       <div class="col-xs-4">
                         <input type="text" id="textatasnama" onkeyup="this.value = this.value.toUpperCase()" class="form-control" placeholder="atas nama" name="na">
+                        <!-- <input type="text" name="na" id="na"> -->
                       </div>
+                    </div>
                   </div>   
               </div>
 
+              <div class="form-group col-xs-6">
+              <label for="exampleInputEmail1">Keterangan</label>
+                 <textarea name="keterangan" class="form-control"  autocomplete="on" required placeholder="Keterangan"></textarea>
+              </div>
+
+              
+
+            </div>
+            
           <div class="box-body">
             <div class="row">
               <div class="col-sm-12">
@@ -161,8 +176,8 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
                       <th>Deskripsi</th>
                       <th>Qty</th>
                       <th>UoM</th>
-                      <!-- <th>Image</th> -->
-                      <!--<th>Total Price</th> -->
+                      <th>Per Unit</th>
+                      <th>Total Price</th>
                       <th>Action</th>
                       </tr>
                     </thead>
@@ -172,11 +187,11 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
                      <tr>
                         <td></td>
                         <td></td>
-                        <!-- <td style='text-align: center;'><b>Total</b></td> -->
+                        <td style='text-align: center;'><b>Total</b></td>
                         <td></td>
-                        <!-- <td></td>
-                        <td></td> -->
-                        <!-- <td style='text-align: center;'><b id="grandtotal"></b><input type="hidden" id="aaa" value=""></td>                     -->
+                        <td></td>
+                        <td></td>
+                        <td style='text-align: center;'><b id="grandtotal"></b><input type="hidden" id="aaa" value=""></td>                    
                     </tr>
 
                   </table>
@@ -196,7 +211,7 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
           </div>
           <!-- /.box -->
         <!-- </div> -->
-      <!-- </div>  -->
+      <!-- </div> -->
   </section>
     <!-- /.content -->
     <div class="clearfix"></div>
@@ -231,10 +246,10 @@ elseif(strlen($last_id_1) == 11){ //panjang kode 11 001-DABN-03
         
         cols += '<td><input type="text" name="tjumlah[]" id="tjumlah'+i+'" class="form-control" onKeyUp="return fjumlah('+i+')" value=""/></td>';
         cols += '<td><input type="text" name="tsatuan[]" id="tsatuan'+i+'" class="form-control" value=""/></td>';
-        //cols += '<td><input type="text" name="tharga[]" id="tharga'+i+'" class="form-control" onKeyUp="return fjumlah('+i+')"  value=""/ ></td>';
+        cols += '<td><input type="text" name="tharga[]" id="tharga'+i+'" class="form-control" onKeyUp="return fjumlah('+i+')"  value=""/ ></td>';
         // cols += '<td>'+ parseInt($("#tharga").val()).toLocaleString("id-ID", {style:"currency", currency:"IDR", minimumFractionDigits: 0,
         // maximumFractionDigits: 0}) + '<input type="hidden" name="tharga[]" id="tharga'+i+'" class="form-control" onKeyUp="return fjumlah('+i+')"  value="" /></td>';
-       //cols += '<td><input type="text" name="ttotal[]" id="hasilJumlah'+i+'" class="form-control price" value="0" readonly="readonly"/></td>';
+        cols += '<td><input type="text" name="ttotal[]" id="hasilJumlah'+i+'" class="form-control price" value="0" readonly="readonly"/></td>';
     //     cols += '<td>'+ parseInt($("#hasilJumlah").val()).toLocaleString("id-ID", {style:"currency", currency:"IDR", minimumFractionDigits: 0,
     // maximumFractionDigits: 0}) + '<input type="hidden" name="ttotal[]" id="hasilJumlah'+i+'" class="form-control price" value="" ></td>';
         cols += '<td><a href="#" class="delrow"><i class="fa fa-trash"></i></a></td>';
